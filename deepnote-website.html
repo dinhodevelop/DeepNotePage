@@ -6,16 +6,17 @@
     <title>DeepNote - Gerenciador de Notas com Timer de Produtividade</title>
     <style>
         :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #18181b;
-            --bg-card: #27272a;
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-card: #1a1a24;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
             --success: #10b981;
-            --border: #3f3f46;
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --border: #2d2d3a;
+            --hero-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            --card-gradient: linear-gradient(145deg, #1e1e2e 0%, #2a2a3e 100%);
         }
 
         * {
@@ -80,29 +81,93 @@
 
         /* Hero Section */
         .hero {
-            padding: 8rem 0 4rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--hero-gradient);
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
             text-align: center;
-            background: var(--gradient);
-            background-attachment: fixed;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-weight: 600;
         }
 
         .hero p {
             font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2rem;
-            max-width: 600px;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .hero-feature svg {
+            color: var(--accent);
         }
 
         .cta-buttons {
@@ -126,25 +191,29 @@
         }
 
         .btn-primary {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            background: linear-gradient(135deg, var(--accent-hover) 0%, #3730a3 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         /* Features Section */
@@ -167,16 +236,35 @@
         }
 
         .feature-card {
-            background: var(--bg-card);
+            background: var(--card-gradient);
             padding: 2rem;
             border-radius: 1rem;
             border: 1px solid var(--border);
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
             border-color: var(--accent);
         }
 
@@ -258,16 +346,43 @@
             color: var(--text-secondary);
         }
 
+        /* Animations */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
-            
+
+            .hero-subtitle {
+                font-size: 1.25rem;
+            }
+
+            .hero p {
+                font-size: 1.125rem;
+            }
+
+            .hero-features {
+                gap: 1.5rem;
+            }
+
             .nav-links {
                 display: none;
             }
-            
+
             .cta-buttons,
             .download-buttons {
                 flex-direction: column;
@@ -291,21 +406,46 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="container">
-                <h1>DeepNote</h1>
-                <p>O gerenciador de notas mais elegante com timer de produtividade integrado. Organize suas ideias e maximize seu foco com uma interface premium e profissional.</p>
-                <div class="cta-buttons">
-                    <a href="#download" class="btn btn-primary">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2L12 15M7 10L12 15L17 10M3 17L3 19C3 20.1 3.9 21 5 21L19 21C20.1 21 21 20.1 21 19L21 17"/>
-                        </svg>
-                        Download Grátis
-                    </a>
-                    <a href="#features" class="btn btn-secondary">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 2L3 14L12 14L11 22L21 10L12 10L13 2Z"/>
-                        </svg>
-                        Ver Recursos
-                    </a>
+                <div class="hero-content">
+                    <div class="hero-subtitle floating">Produtividade Reimaginada</div>
+                    <h1>DeepNote</h1>
+                    <p>O gerenciador de notas mais elegante com timer de produtividade integrado. Transforme suas ideias em realidade com uma interface premium que combina simplicidade e poder.</p>
+
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12L11 14L15 10M21 12C21 16.97 16.97 21 12 21S3 16.97 3 12 7.03 3 12 3 21 7.03 21 12Z"/>
+                            </svg>
+                            100% Gratuito
+                        </div>
+                        <div class="hero-feature">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z"/>
+                            </svg>
+                            Dados Locais
+                        </div>
+                        <div class="hero-feature">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M12.5 7H11V13L16.2 16.2L17 14.9L12.5 12.2V7Z"/>
+                            </svg>
+                            Timer Integrado
+                        </div>
+                    </div>
+
+                    <div class="cta-buttons">
+                        <a href="#download" class="btn btn-primary">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15M7 10L12 15L17 10M12 15V3"/>
+                            </svg>
+                            Baixar Agora
+                        </a>
+                        <a href="#features" class="btn btn-secondary">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path d="M13 2L3 14L12 14L11 22L21 10L12 10L13 2Z"/>
+                            </svg>
+                            Explorar Recursos
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -384,7 +524,7 @@
                 <h2>Baixe o DeepNote</h2>
                 <p>Disponível gratuitamente para Windows e Linux. Instalação simples e rápida.</p>
                 <div class="download-buttons">
-                    <a href="./dist/DeepNote Setup 1.0.0.exe" class="download-btn" download>
+                    <a href="https://github.com/dinhodevelop/DeepNotePage/releases/download/v1.0.0/DeepNote.Setup.1.0.0.exe" class="download-btn" download>
                         <svg class="os-icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M3 12V6.75L9 5.43V11.91L3 12M20 3V11.75L10.5 11.9V5.21L20 3M3 13L9 13.09V19.9L3 18.75V13M20 13.25V22L10.5 20.09V13.1L20 13.25Z"/>
                         </svg>
@@ -394,7 +534,7 @@
                         </div>
                     </a>
 
-                    <a href="./dist/DeepNote-1.0.0.AppImage" class="download-btn" download>
+                    <a href="https://github.com/dinhodevelop/DeepNotePage/releases/download/v1.0.0/DeepNote-1.0.0.AppImage" class="download-btn" download>
                         <svg class="os-icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.5 2C13.81 2 15.04 2.53 15.95 3.46L20.54 8.05C21.47 8.96 22 10.19 22 11.5V20.5C22 21.33 21.33 22 20.5 22H3.5C2.67 22 2 21.33 2 20.5V3.5C2 2.67 2.67 2 3.5 2H12.5M12 4H4V20H20V12H15C13.34 12 12 10.66 12 9V4M14 4V9C14 9.55 14.45 10 15 10H20L14 4Z"/>
                         </svg>
@@ -404,7 +544,7 @@
                         </div>
                     </a>
 
-                    <a href="./dist/deepnote_1.0.0_amd64.deb" class="download-btn" download>
+                    <a href="https://github.com/dinhodevelop/DeepNotePage/releases/download/v1.0.0/deepnote_1.0.0_amd64.deb" class="download-btn" download>
                         <svg class="os-icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.5 2C13.81 2 15.04 2.53 15.95 3.46L20.54 8.05C21.47 8.96 22 10.19 22 11.5V20.5C22 21.33 21.33 22 20.5 22H3.5C2.67 22 2 21.33 2 20.5V3.5C2 2.67 2.67 2 3.5 2H12.5M12 4H4V20H20V12H15C13.34 12 12 10.66 12 9V4M14 4V9C14 9.55 14.45 10 15 10H20L14 4Z"/>
                         </svg>
