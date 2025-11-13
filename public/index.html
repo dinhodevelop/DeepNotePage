@@ -346,6 +346,97 @@
             color: var(--text-secondary);
         }
 
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--card-gradient);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        .toast-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.info {
+            border-color: var(--accent);
+        }
+
+        .toast.info .toast-icon {
+            color: var(--accent);
+        }
+
         /* Animations */
         @keyframes rotate {
             from { transform: rotate(0deg); }
@@ -388,11 +479,22 @@
                 flex-direction: column;
                 align-items: center;
             }
+
+            .toast-container {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+            }
+
+            .toast {
+                min-width: auto;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
+    <header style="display: none;">
         <nav class="container">
             <div class="logo">DeepNote</div>
             <ul class="nav-links">
@@ -581,15 +683,125 @@
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2024 DeepNote. Desenvolvido com ❤️ para produtividade máxima.</p>
-            <p style="margin-top: 0.5rem; font-size: 0.875rem;">
-                Código aberto • Privacidade garantida • Sem coleta de dados
-            </p>
-        </div>
+  <div class="container">
+    <p style="margin: 0;">
+      &copy; 2024 <strong>DeepNote</strong>. Desenvolvido com ❤️ por
+      <a href="https://github.com/dinhodevelop" style="color: #554f9e; text-decoration: none; font-weight: 500;">
+        @Dinho
+      </a>
+    </p>
+    <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #555;">
+      Código aberto • Privacidade garantida • Sem coleta de dados
+    </p>
+  </div>
     </footer>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
     <script>
+        // Toast System
+        class ToastManager {
+            constructor() {
+                this.container = document.getElementById('toast-container');
+                this.toasts = new Map();
+            }
+
+            show(options) {
+                const {
+                    title = 'Notificação',
+                    message = '',
+                    type = 'info',
+                    duration = 4000,
+                    icon = null
+                } = options;
+
+                const toastId = Date.now().toString();
+                const toast = this.createToast(toastId, title, message, type, icon);
+
+                this.container.appendChild(toast);
+                this.toasts.set(toastId, toast);
+
+                // Trigger show animation
+                requestAnimationFrame(() => {
+                    toast.classList.add('show');
+                });
+
+                // Auto remove
+                if (duration > 0) {
+                    setTimeout(() => {
+                        this.hide(toastId);
+                    }, duration);
+                }
+
+                return toastId;
+            }
+
+            createToast(id, title, message, type, customIcon) {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.dataset.toastId = id;
+
+                const icons = {
+                    success: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.97 16.97 21 12 21S3 16.97 3 12 7.03 3 12 3 21 7.03 21 12Z"/>
+                    </svg>`,
+                    info: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 9H11V7H13M13 17H11V11H13M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2Z"/>
+                    </svg>`,
+                    download: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M5 20H19V18H5M19 9H15V3H9V9H5L12 16L19 9Z"/>
+                    </svg>`
+                };
+
+                const icon = customIcon || icons[type] || icons.info;
+
+                toast.innerHTML = `
+                    ${icon}
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        ${message ? `<div class="toast-message">${message}</div>` : ''}
+                    </div>
+                    <button class="toast-close" onclick="toastManager.hide('${id}')">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
+                        </svg>
+                    </button>
+                `;
+
+                return toast;
+            }
+
+            hide(toastId) {
+                const toast = this.toasts.get(toastId);
+                if (toast) {
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                        this.toasts.delete(toastId);
+                    }, 400);
+                }
+            }
+
+            success(title, message, duration = 4000) {
+                return this.show({ title, message, type: 'success', duration });
+            }
+
+            info(title, message, duration = 4000) {
+                return this.show({ title, message, type: 'info', duration });
+            }
+
+            download(title, message, duration = 5000) {
+                return this.show({ title, message, type: 'download', duration });
+            }
+        }
+
+        // Initialize toast manager
+        const toastManager = new ToastManager();
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
